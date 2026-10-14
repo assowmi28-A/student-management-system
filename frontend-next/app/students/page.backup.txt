@@ -1,0 +1,340 @@
+﻿"use client";
+
+import { useEffect, useState } from "react";
+
+const API = "http://127.0.0.1:8000";
+
+type Student = {
+  id: number;
+  name?: string;
+  first_name?: string;
+  last_name?: string;
+  email: string;
+  phone_number?: string;
+  course?: string;
+};
+
+export default function StudentRecordsPage() {
+  const [students, setStudents] = useState<Student[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [search, setSearch] = useState("");
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [form, setForm] = useState({
+    first_name: "",
+    last_name: "",
+    email: "",
+    phone_number: "",
+    course: "",
+  });
+  const [saving, setSaving] = useState(false);
+  const [notice, setNotice] = useState("");
+
+  async function loadStudents() {
+    setLoading(true);
+    setError("");
+
+    try {
+      const response = await fetch(`${API}/students`);
+      if (!response.ok) throw new Error("Students load aagala.");
+
+      const data = await response.json();
+      setStudents(Array.isArray(data) ? data : []);
+    } catch {
+      setError("Backend running-ah irukka-nu check pannunga.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  function startEdit(student: Student) {
+    const parts = (student.name || "").split(" ");
+    setForm({
+      first_name: student.first_name || parts.shift() || "",
+      last_name: student.last_name || parts.join(" "),
+      email: student.email || "",
+      phone_number: student.phone_number || "",
+      course: student.course || "",
+    });
+    setEditingId(student.id);
+    setNotice("");
+    setError("");
+  }
+
+  async function saveEdit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (editingId === null) return;
+
+    setSaving(true);
+    setError("");
+    setNotice("");
+
+    try {
+      const response = await fetch(`${API}/students/${editingId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...form,
+          first_name: form.first_name.trim(),
+          last_name: form.last_name.trim(),
+          email: form.email.trim(),
+          phone_number: form.phone_number.trim(),
+          course: form.course.trim(),
+        }),
+      });
+
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        const detail = Array.isArray(data.detail)
+          ? data.detail.map((item: { msg?: string }) => item.msg).join(", ")
+          : data.detail;
+        throw new Error(detail || "Update panna mudiyala.");
+      }
+
+      setEditingId(null);
+      setNotice("Student details successfully updated.");
+      await loadStudents();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Update failed.");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function deleteStudent(id: number) {
+    if (!window.confirm("Indha student record-ah delete pannalama?")) return;
+
+    setError("");
+    setNotice("");
+
+    try {
+      const response = await fetch(`${API}/students/${id}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) throw new Error("Delete panna mudiyala.");
+
+      setStudents((previous) => previous.filter((s) => s.id !== id));
+      setNotice("Student successfully deleted.");
+      if (editingId === id) setEditingId(null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Delete failed.");
+    }
+  }
+
+  useEffect(() => {
+    void loadStudents();
+  }, []);
+
+  const filtered = students.filter((student) => {
+    const text = [
+      student.id,
+      student.name,
+      student.first_name,
+      student.last_name,
+      student.email,
+      student.phone_number,
+      student.course,
+    ]
+      .join(" ")
+      .toLowerCase();
+
+    return text.includes(search.toLowerCase());
+  });
+
+  return (
+    <main className="min-h-screen bg-slate-50 p-5 text-slate-900 sm:p-8">
+      <div className="mx-auto max-w-7xl">
+        <header className="mb-7 flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-widest text-blue-700">
+              STUDENT MANAGEMENT SYSTEM
+            </p>
+            <h1 className="mt-2 text-3xl font-bold">Student Records</h1>
+            <p className="mt-2 text-sm text-slate-500">
+              View, search, edit and manage student information.
+            </p>
+          </div>
+          <a
+            href="/add-student"
+            className="rounded-xl bg-blue-700 px-5 py-3 font-semibold text-white transition hover:bg-blue-800"
+          >
+            + Add Student
+          </a>
+        </header>
+
+        <section className="mb-5 grid gap-4 sm:grid-cols-2">
+          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <p className="text-sm text-slate-500">Total Students</p>
+            <p className="mt-2 text-3xl font-bold">
+              {loading ? "..." : students.length}
+            </p>
+          </div>
+          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <p className="text-sm text-slate-500">Unique Courses</p>
+            <p className="mt-2 text-3xl font-bold">
+              {new Set(
+                students.map((s) => s.course?.trim().toLowerCase()).filter(Boolean)
+              ).size}
+            </p>
+          </div>
+        </section>
+
+        {(error || notice) && (
+          <div
+            role={error ? "alert" : "status"}
+            className={`mb-4 rounded-xl p-4 text-sm ${
+              error
+                ? "bg-red-50 text-red-700"
+                : "bg-emerald-50 text-emerald-700"
+            }`}
+          >
+            {error || notice}
+          </div>
+        )}
+
+        {editingId !== null && (
+          <form
+            onSubmit={saveEdit}
+            className="mb-6 rounded-2xl border border-blue-200 bg-white p-6 shadow-sm"
+          >
+            <h2 className="mb-5 text-xl font-bold">Edit Student #{editingId}</h2>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {(
+                [
+                  ["first_name", "First Name"],
+                  ["last_name", "Last Name"],
+                  ["email", "Email"],
+                  ["phone_number", "Phone Number"],
+                  ["course", "Course"],
+                ] as const
+              ).map(([key, label]) => (
+                <label key={key} className="text-sm font-medium">
+                  {label}
+                  <input
+                    required
+                    type={key === "email" ? "email" : "text"}
+                    value={form[key]}
+                    onChange={(e) =>
+                      setForm((previous) => ({
+                        ...previous,
+                        [key]: e.target.value,
+                      }))
+                    }
+                    className="mt-1 w-full rounded-xl border border-slate-300 p-3 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                  />
+                </label>
+              ))}
+            </div>
+            <div className="mt-5 flex flex-wrap gap-3">
+              <button
+                disabled={saving}
+                className="rounded-xl bg-blue-700 px-5 py-3 font-semibold text-white disabled:opacity-50"
+              >
+                {saving ? "Saving..." : "Save Changes"}
+              </button>
+              <button
+                type="button"
+                onClick={() => setEditingId(null)}
+                className="rounded-xl border border-slate-300 px-5 py-3 font-semibold"
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
+        )}
+
+        <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 p-4 sm:p-5">
+            <h2 className="font-bold">All Students</h2>
+            <div className="flex gap-2">
+              <input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search students..."
+                className="w-48 rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:border-blue-500 sm:w-64"
+              />
+              <button
+                onClick={() => void loadStudents()}
+                className="rounded-xl border border-slate-300 px-3 py-2 text-sm font-medium hover:bg-slate-50"
+              >
+                Refresh
+              </button>
+            </div>
+          </div>
+
+          {loading ? (
+            <p className="p-6 text-slate-500">Loading students...</p>
+          ) : error && students.length === 0 ? (
+            <div className="p-6">
+              <p className="text-red-600">{error}</p>
+              <button onClick={() => void loadStudents()} className="mt-3 underline">
+                Retry
+              </button>
+            </div>
+          ) : filtered.length === 0 ? (
+            <p className="p-8 text-center text-slate-500">
+              {search ? "No matching students found." : "No student records yet."}
+            </p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[760px] text-left text-sm">
+                <thead className="bg-slate-50 text-slate-600">
+                  <tr>
+                    {["ID", "Name", "Email", "Phone", "Course", "Actions"].map(
+                      (heading) => (
+                        <th key={heading} className="px-5 py-4 font-semibold">
+                          {heading}
+                        </th>
+                      )
+                    )}
+                  </tr>
+                </thead>
+                <tbody>
+                  {filtered.map((student) => (
+                    <tr
+                      key={student.id}
+                      className="border-t border-slate-100 transition hover:bg-slate-50"
+                    >
+                      <td className="px-5 py-4 font-medium">{student.id}</td>
+                      <td className="px-5 py-4 font-medium">
+                        {student.name ||
+                          `${student.first_name || ""} ${student.last_name || ""}`.trim() ||
+                          "ï¿½"}
+                      </td>
+                      <td className="px-5 py-4">{student.email}</td>
+                      <td className="px-5 py-4">{student.phone_number || "ï¿½"}</td>
+                      <td className="px-5 py-4">
+                        <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700">
+                          {student.course || "ï¿½"}
+                        </span>
+                      </td>
+                      <td className="px-5 py-4">
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => setViewingStudent(student)}
+                            className="rounded-lg bg-amber-50 px-3 py-2 font-medium text-amber-700 hover:bg-amber-100"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => void deleteStudent(student.id)}
+                            className="rounded-lg bg-red-50 px-3 py-2 font-medium text-red-600 hover:bg-red-100"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </section>
+      </div>
+    </main>
+  );
+}
+
+
