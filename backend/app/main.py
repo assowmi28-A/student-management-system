@@ -10,12 +10,11 @@ from . import models, schemas
 
 app = FastAPI(title="Student Management API")
 
+# CORS: allow the frontend to talk to this backend (development setting).
+# In production, replace "*" with your real frontend URL(s).
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://127.0.0.1:5500",
-        "http://localhost:5500",
-    ],
+    allow_origins=["*"],
     allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -101,6 +100,18 @@ def get_student_or_404(db: Session, student_id: int) -> models.Student:
 @app.get("/")
 def home():
     return {"message": "Student Management API is running"}
+
+
+@app.get("/health")
+def health():
+    return {"status": "ok"}
+
+
+@app.get("/courses")
+def get_courses(db: Session = Depends(get_db)):
+    rows = db.query(models.Student.course).distinct().all()
+    courses = sorted({r[0] for r in rows if r[0]})
+    return {"total": len(courses), "courses": courses}
 
 
 @app.get("/students")
