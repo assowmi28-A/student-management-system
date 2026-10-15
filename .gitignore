@@ -1,0 +1,20 @@
+﻿# Python
+__pycache__/
+*.py[cod]
+.venv/
+
+# Database files
+*.db
+
+# Node / Next.js
+node_modules/
+.next/
+out/
+
+# Environment secrets
+.env
+.env.*
+!.env.example
+
+# Vercel
+.vercel/

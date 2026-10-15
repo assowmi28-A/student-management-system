@@ -1,0 +1,449 @@
+
+@import "tailwindcss";
+
+/* ---------- Base ---------- */
+
+:root {
+  color-scheme: light;
+  --navy: #142544;
+  --blue: #365cf5;
+  --muted: #71809a;
+  --border: #e5eaf3;
+  --surface: #ffffff;
+  --page: #f5f7fc;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-height: 100%;
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  font-family: "Segoe UI", Inter, Arial, sans-serif;
+  color: #263650;
+  background: var(--page);
+  -webkit-font-smoothing: antialiased;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+a {
+  text-decoration: none;
+}
+
+::selection {
+  background: #dce5ff;
+  color: #142544;
+}
+
+/* ---------- Dashboard canvas ---------- */
+
+main.min-h-screen {
+  min-height: 100vh;
+  background:
+    radial-gradient(ellipse at 5% 0%, #e9efff 0%, transparent 33%),
+    linear-gradient(180deg, #f8faff 0%, #f3f6fc 100%);
+}
+
+main > div.mx-auto {
+  width: 100%;
+}
+
+/* ---------- Dashboard heading ---------- */
+
+main > div > header {
+  position: relative;
+  padding: 28px 30px;
+  border: 1px solid rgba(222, 230, 244, 0.9);
+  border-radius: 22px;
+  background: linear-gradient(115deg, #ffffff 35%, #edf2ff 100%);
+  box-shadow: 0 8px 28px rgba(27, 49, 91, 0.055);
+}
+
+main > div > header h1 {
+  color: var(--navy);
+  font-size: clamp(27px, 3vw, 36px);
+  font-weight: 800;
+  letter-spacing: -1.15px;
+  line-height: 1.2;
+}
+
+main > div > header p {
+  color: var(--muted);
+  font-size: 15px;
+}
+
+/* ---------- Add Student button ---------- */
+
+main > div > header a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+  padding: 13px 21px;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #4169ff, #5145e8);
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  box-shadow: 0 5px 12px rgba(65, 91, 237, 0.18);
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+main > div > header a:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 9px 19px rgba(65, 91, 237, 0.24);
+}
+
+/* ---------- Student count and search ---------- */
+
+main > div > div.mb-5 {
+  margin-top: 25px;
+  margin-bottom: 17px;
+}
+
+main > div > div.mb-5 > p {
+  color: var(--navy);
+  font-size: 15px;
+  font-weight: 750;
+}
+
+main > div > div.mb-5 input {
+  width: 100%;
+  min-height: 46px;
+  border: 1px solid #dce4f1;
+  border-radius: 12px;
+  background: #ffffff;
+  padding: 12px 16px;
+  color: #243650;
+  font-size: 14px;
+  box-shadow: 0 2px 5px rgba(20, 37, 68, 0.025);
+  outline: none;
+  transition: border-color 180ms ease, box-shadow 180ms ease;
+}
+
+main > div > div.mb-5 input::placeholder {
+  color: #99a5b8;
+}
+
+main > div > div.mb-5 input:focus {
+  border-color: #8097ff;
+  box-shadow: 0 0 0 4px rgba(65, 91, 237, 0.09);
+}
+
+/* ---------- Records table card ---------- */
+
+main > div > div.overflow-x-auto {
+  overflow-x: auto;
+  border: 1px solid #e4e9f2;
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow: 0 7px 24px rgba(27, 49, 91, 0.055);
+}
+
+main table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: #ffffff;
+}
+
+main table thead th {
+  padding: 18px 20px;
+  border-bottom: 1px solid #e5eaf4;
+  background: #f0f4ff;
+  color: #536582;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+  text-align: left;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+main table thead th:first-child {
+  border-top-left-radius: 17px;
+}
+
+main table thead th:last-child {
+  border-top-right-radius: 17px;
+}
+
+main table tbody tr {
+  transition: background-color 160ms ease;
+}
+
+main table tbody tr:hover {
+  background: #f8faff;
+}
+
+main table tbody td {
+  padding: 19px 20px;
+  border-bottom: 1px solid #edf0f6;
+  color: #33445f;
+  font-size: 14px;
+  line-height: 1.55;
+  vertical-align: middle;
+}
+
+main table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+main table tbody td:first-child {
+  color: #1c2c49;
+  font-weight: 700;
+}
+
+/* ---------- View, Edit, Delete actions ---------- */
+
+main table td button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 35px;
+  padding: 8px 12px;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  font-size: 12px;
+  font-weight: 750;
+  white-space: nowrap;
+  transition: background-color 160ms ease, transform 160ms ease;
+}
+
+main table td button:hover {
+  transform: translateY(-1px);
+}
+
+main table td button.bg-blue-100 {
+  border-color: #d9e3ff;
+  background: #edf2ff;
+  color: #3153d9;
+}
+
+main table td button.bg-blue-100:hover {
+  background: #dfe8ff;
+}
+
+main table td button.bg-amber-100 {
+  border-color: #f6e3b5;
+  background: #fff6df;
+  color: #95610b;
+}
+
+main table td button.bg-amber-100:hover {
+  background: #ffedc0;
+}
+
+main table td button.bg-red-100 {
+  border-color: #f8d5d9;
+  background: #fff0f1;
+  color: #c43b4b;
+}
+
+main table td button.bg-red-100:hover {
+  background: #ffe1e4;
+}
+
+/* ---------- Error and loading messages ---------- */
+
+main .bg-red-50 {
+  border: 1px solid #f4d2d7;
+  border-radius: 12px;
+}
+
+main .rounded-xl.bg-white.p-6 {
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: #ffffff;
+  color: var(--muted);
+}
+
+/* ---------- Modal forms ---------- */
+
+main .fixed.inset-0 form,
+main .fixed.inset-0 section {
+  border: 1px solid #e8edf5;
+  border-radius: 20px;
+  background: #ffffff;
+  box-shadow: 0 24px 70px rgba(12, 25, 49, 0.22);
+}
+
+main .fixed.inset-0 input,
+main .fixed.inset-0 select,
+main .fixed.inset-0 textarea {
+  width: 100%;
+  min-height: 43px;
+  border: 1px solid #dce3ee;
+  border-radius: 10px;
+  background: #ffffff;
+  padding: 10px 12px;
+  color: #263650;
+  outline: none;
+}
+
+main .fixed.inset-0 input:focus,
+main .fixed.inset-0 select:focus,
+main .fixed.inset-0 textarea:focus {
+  border-color: #8097ff;
+  box-shadow: 0 0 0 3px rgba(65, 91, 237, 0.09);
+}
+
+main .fixed.inset-0 form button,
+main .fixed.inset-0 section button {
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 640px) {
+  main.min-h-screen {
+    padding: 16px;
+  }
+
+  main > div > header {
+    padding: 21px;
+    border-radius: 17px;
+  }
+
+  main > div > header h1 {
+    font-size: 27px;
+  }
+
+  main table thead th,
+  main table tbody td {
+    padding: 14px 13px;
+  }
+
+  main > div > div.mb-5 input {
+    max-width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+/* Premium dashboard finishing touches */
+
+main.min-h-screen {
+  padding: 40px 32px;
+}
+
+main > div.mx-auto {
+  max-width: 1240px;
+}
+
+main > div > header {
+  border-radius: 24px;
+  padding: 32px;
+  background: linear-gradient(120deg, #fff 20%, #e9efff 100%);
+  box-shadow: 0 12px 35px rgba(31, 52, 100, 0.08);
+}
+
+main > div > header h1 {
+  font-size: 38px;
+  letter-spacing: -1.4px;
+}
+
+main > div > div.mb-5 {
+  margin-top: 30px;
+  margin-bottom: 20px;
+}
+
+main table thead th {
+  padding: 22px 24px;
+  background: #edf2ff;
+}
+
+main table tbody td {
+  padding: 24px;
+}
+
+main > div > div.overflow-x-auto {
+  border-radius: 20px;
+  box-shadow: 0 12px 35px rgba(31, 52, 100, 0.07);
+}
+
+main table td button {
+  min-height: 38px;
+  padding: 10px 14px;
+}
+
+@media (max-width: 640px) {
+  main.min-h-screen {
+    padding: 16px;
+  }
+
+  main > div > header h1 {
+    font-size: 28px;
+  }
+
+  main > div > header {
+    padding: 20px;
+  }
+}
+/* Final dashboard polish */
+main > div > header {
+  position: relative;
+  overflow: hidden;
+  border-left: 4px solid #365cf5;
+}
+
+main > div > div.mb-5 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+main table tbody td:first-child {
+  font-weight: 700;
+  color: #182b4b;
+}
+
+main table tbody tr:hover td {
+  background: #f8faff;
+}
+
+main table td button {
+  min-width: 58px;
+}
+
+main > div > div.overflow-x-auto {
+  overflow: hidden;
+}
+
+@media (max-width: 640px) {
+  main > div > div.mb-5 {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}
