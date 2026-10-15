@@ -1,3 +1,4 @@
+
 from datetime import date
 
 from fastapi import FastAPI, Depends, HTTPException
@@ -10,11 +11,20 @@ from . import models, schemas
 
 app = FastAPI(title="Student Management API")
 
-# CORS: allow the frontend to talk to this backend (development setting).
-# In production, replace "*" with your real frontend URL(s).
+# Allow the local frontend and deployed Vercel frontend.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "http://localhost:5500",
+        "http://127.0.0.1:5500",
+        "https://student-management-system-dj9x.vercel.app",
+    ],
+    allow_credentials=False,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
     allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -33,14 +43,12 @@ def get_db():
 
 def calculate_age(dob: date) -> int:
     today = date.today()
-    return (
-        today.year - dob.year
-        - ((today.month, today.day) < (dob.month, dob.day))
+    return today.year - dob.year - (
+        (today.month, today.day) < (dob.month, dob.day)
     )
 
 
 def clean(value):
-    """Strip strings; pass through None and non-strings."""
     return value.strip() if isinstance(value, str) else value
 
 
@@ -61,16 +69,23 @@ def student_data(student):
     }
 
 
-def validate_payload(student: schemas.StudentCreate) -> None:
+def validate_payload(student: schemas.StudentCreate):
     if student.date_of_birth >= date.today():
         raise HTTPException(
             status_code=400,
             detail="Date of birth must be in the past.",
         )
+
     if not clean(student.first_name) or not clean(student.last_name):
         raise HTTPException(
             status_code=400,
             detail="First and last name cannot be blank.",
+        )
+
+    if not clean(student.course):
+        raise HTTPException(
+            status_code=400,
+            detail="Course cannot be blank.",
         )
 
 
@@ -90,7 +105,7 @@ def apply_fields(record: models.Student, student: schemas.StudentCreate):
     record.age = calculate_age(student.date_of_birth)
 
 
-def get_student_or_404(db: Session, student_id: int) -> models.Student:
+def get_student_or_404(db: Session, student_id: int):
     student = db.get(models.Student, student_id)
     if student is None:
         raise HTTPException(status_code=404, detail="Student not found")
@@ -117,7 +132,7 @@ def get_courses(db: Session = Depends(get_db)):
 @app.get("/students")
 def get_students(db: Session = Depends(get_db)):
     records = db.query(models.Student).order_by(models.Student.id).all()
-    return [student_data(s) for s in records]
+    return [student_data(student) for student in records]
 
 
 @app.get("/students/{student_id}")
@@ -133,7 +148,11 @@ def create_student(
     validate_payload(student)
 
     email = str(student.email).strip().lower()
-    if db.query(models.Student).filter(models.Student.email == email).first():
+    duplicate = db.query(models.Student).filter(
+        models.Student.email == email
+    ).first()
+
+    if duplicate:
         raise HTTPException(
             status_code=409,
             detail="This email is already registered.",
@@ -173,6 +192,7 @@ def update_student(
         models.Student.email == email,
         models.Student.id != student_id,
     ).first()
+
     if duplicate:
         raise HTTPException(
             status_code=409,
