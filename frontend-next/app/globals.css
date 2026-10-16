@@ -1,15 +1,15 @@
-@import "tailwindcss";
+﻿@import "tailwindcss";
 
 /* ---------- Base ---------- */
 
 :root {
   color-scheme: light;
-  --navy: #142544;
-  --blue: #365cf5;
-  --muted: #71809a;
-  --border: #e5eaf3;
-  --surface: #ffffff;
-  --page: #f5f7fc;
+  --navy: #1F1B16;
+  --blue: #1F6F6B;
+  --muted: #6B6358;
+  --border: #DDD5C4;
+  --surface: #FFFDF8;
+  --page: #F5F1E8;
 }
 
 * {
@@ -55,7 +55,7 @@ a {
 }
 
 ::selection {
-  background: #dce5ff;
+  background: #D8E9E5;
   color: #142544;
 }
 
@@ -65,8 +65,8 @@ main.min-h-screen {
   min-height: 100vh;
   padding: 40px 32px;
   background:
-    radial-gradient(ellipse at 5% 0%, #e9efff 0%, transparent 33%),
-    linear-gradient(180deg, #f8faff 0%, #f3f6fc 100%);
+    radial-gradient(ellipse at 5% 0%, #F0E9DA 0%, transparent 33%),
+    linear-gradient(180deg, #FAF7F0 0%, #F5F1E8 100%);
 }
 
 main > div.mx-auto {
@@ -83,7 +83,7 @@ main > div > header {
   border: 1px solid rgba(222, 230, 244, 0.9);
   border-left: 4px solid #365cf5;
   border-radius: 24px;
-  background: linear-gradient(120deg, #ffffff 20%, #e9efff 100%);
+  background: linear-gradient(120deg, #ffffff 20%, #F0E9DA 100%);
   box-shadow: 0 12px 35px rgba(31, 52, 100, 0.08);
 }
 
@@ -113,7 +113,7 @@ main > div > header a {
   padding: 12px 22px;
   border: 1px solid transparent;
   border-radius: 12px;
-  background: linear-gradient(135deg, #4169ff, #5145e8);
+  background: linear-gradient(135deg, #1F6F6B, #185956);
   color: #ffffff;
   font-size: 14px;
   font-weight: 700;
@@ -148,7 +148,7 @@ main > div > div.mb-5 > p {
 main > div > div.mb-5 input {
   width: 100%;
   min-height: 44px;
-  border: 1px solid #dce4f1;
+  border: 1px solid #DDD5C4;
   border-radius: 12px;
   background: #ffffff;
   padding: 10px 14px;
@@ -164,7 +164,7 @@ main > div > div.mb-5 input::placeholder {
 }
 
 main > div > div.mb-5 input:focus {
-  border-color: #8097ff;
+  border-color: #1F6F6B;
   box-shadow: 0 0 0 3px rgba(65, 91, 237, 0.12);
 }
 
@@ -173,7 +173,7 @@ main > div > div.mb-5 input:focus {
 main > div > div.overflow-x-auto {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
-  border: 1px solid #e4e9f2;
+  border: 1px solid #DDD5C4;
   border-radius: 20px;
   background: #ffffff;
   box-shadow: 0 10px 30px rgba(31, 52, 100, 0.06);
@@ -189,8 +189,8 @@ main table {
 
 main table thead th {
   padding: 16px 20px;
-  border-bottom: 1px solid #e5eaf4;
-  background: #edf2ff;
+  border-bottom: 1px solid #DDD5C4;
+  background: #F0E9DA;
   color: #536582;
   font-size: 11px;
   font-weight: 800;
@@ -213,12 +213,12 @@ main table tbody tr {
 }
 
 main table tbody tr:hover td {
-  background: #f8faff;
+  background: #FAF7F0;
 }
 
 main table tbody td {
   padding: 18px 20px;
-  border-bottom: 1px solid #edf0f6;
+  border-bottom: 1px solid #EEE7DA;
   color: #33445f;
   font-size: 14px;
   line-height: 1.5;
@@ -257,7 +257,7 @@ main table td button:hover {
 
 main table td button.bg-blue-100 {
   border-color: #d9e3ff;
-  background: #edf2ff;
+  background: #F0E9DA;
   color: #3153d9;
 }
 
@@ -326,7 +326,7 @@ main .fixed.inset-0 textarea {
 main .fixed.inset-0 input:focus,
 main .fixed.inset-0 select:focus,
 main .fixed.inset-0 textarea:focus {
-  border-color: #8097ff;
+  border-color: #1F6F6B;
   box-shadow: 0 0 0 3px rgba(65, 91, 237, 0.09);
 }
 
