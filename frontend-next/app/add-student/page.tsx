@@ -1,7 +1,9 @@
+
 "use client";
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 const API_URL = (
   process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000"
@@ -30,6 +32,8 @@ const initialForm: StudentForm = {
 };
 
 export default function AddStudentPage() {
+  const router = useRouter();
+
   const [form, setForm] = useState<StudentForm>(initialForm);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
@@ -39,7 +43,9 @@ export default function AddStudentPage() {
     setForm((previous) => ({ ...previous, [field]: value }));
   }
 
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(
+    event: React.FormEvent<HTMLFormElement>
+  ) {
     event.preventDefault();
     setMessage("");
     setError("");
@@ -99,14 +105,22 @@ export default function AddStudentPage() {
 
       if (!response.ok) {
         const detail = Array.isArray(data.detail)
-          ? data.detail.map((item: { msg?: string }) => item.msg).join(", ")
+          ? data.detail
+              .map((item: { msg?: string }) => item.msg)
+              .join(", ")
           : data.detail;
 
-        throw new Error(detail || "Could not save student record.");
+        throw new Error(
+          detail || "Could not save student record."
+        );
       }
 
       setMessage("Student successfully added!");
       setForm(initialForm);
+
+      // Return to student records after a successful save.
+      router.push("/students");
+      router.refresh();
     } catch (err) {
       setError(
         err instanceof Error
@@ -119,44 +133,52 @@ export default function AddStudentPage() {
   }
 
   const inputClass =
-    "mt-1 w-full rounded-xl border border-slate-300 bg-white p-3 text-slate-900 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 text-base transition";
+    "mt-1 w-full rounded-xl border border-[#DDD5C4] bg-white p-3 text-[#1F1B16] outline-none focus:border-[#1F6F6B] focus:ring-2 focus:ring-[#D8E9E5] text-base transition";
 
   return (
-    <main className="min-h-screen bg-slate-50 p-4 sm:p-6 md:p-10 text-slate-900">
+    <main className="min-h-screen bg-[#F5F1E8] p-4 sm:p-6 md:p-10 text-[#1F1B16]">
       <div className="mx-auto max-w-3xl">
-        <header className="mb-6 flex flex-wrap items-center justify-between gap-4">
+        <header className="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
           <div>
-            <h1 className="text-2xl font-bold sm:text-3xl">Add Student</h1>
-            <p className="mt-1 text-sm text-slate-600 sm:text-base">
+            <h1 className="text-2xl font-bold sm:text-3xl">
+              Add Student
+            </h1>
+            <p className="mt-1 text-sm text-[#6B6358] sm:text-base">
               Enter student details to add a new record.
             </p>
           </div>
 
           <Link
             href="/students"
-            className="inline-flex w-full sm:w-auto items-center justify-center rounded-xl border border-slate-300 bg-white px-5 py-3 font-semibold text-slate-700 hover:bg-slate-50 transition shadow-sm text-sm"
+            className="inline-flex w-full items-center justify-center rounded-xl border border-[#DDD5C4] bg-white px-5 py-3 font-semibold text-[#1F6F6B] transition hover:bg-[#F0E9DA] sm:w-auto"
           >
-            View Records
+            ← Back to Student Records
           </Link>
         </header>
 
         <form
           onSubmit={handleSubmit}
-          className="space-y-5 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6 md:p-8"
+          className="space-y-5 rounded-2xl border border-[#DDD5C4] bg-white p-4 shadow-sm sm:p-6 md:p-8"
         >
           {error && (
-            <div role="alert" className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700 break-words">
+            <div
+              role="alert"
+              className="break-words rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700"
+            >
               {error}
             </div>
           )}
 
           {message && (
-            <div role="status" className="rounded-xl border border-green-200 bg-green-50 p-4 text-sm text-green-700 break-words">
+            <div
+              role="status"
+              className="break-words rounded-xl border border-green-200 bg-green-50 p-4 text-sm text-green-700"
+            >
               {message}
             </div>
           )}
 
-          <div className="grid gap-4 sm:gap-5 sm:grid-cols-2">
+          <div className="grid gap-4 sm:grid-cols-2 sm:gap-5">
             <label className="text-sm font-semibold">
               First Name *
               <input
@@ -164,7 +186,9 @@ export default function AddStudentPage() {
                 maxLength={100}
                 className={inputClass}
                 value={form.first_name}
-                onChange={(e) => updateField("first_name", e.target.value)}
+                onChange={(e) =>
+                  updateField("first_name", e.target.value)
+                }
                 placeholder="Enter first name"
               />
             </label>
@@ -176,7 +200,9 @@ export default function AddStudentPage() {
                 maxLength={100}
                 className={inputClass}
                 value={form.last_name}
-                onChange={(e) => updateField("last_name", e.target.value)}
+                onChange={(e) =>
+                  updateField("last_name", e.target.value)
+                }
                 placeholder="Enter last name"
               />
             </label>
@@ -188,7 +214,9 @@ export default function AddStudentPage() {
                 type="email"
                 className={inputClass}
                 value={form.email}
-                onChange={(e) => updateField("email", e.target.value)}
+                onChange={(e) =>
+                  updateField("email", e.target.value)
+                }
                 placeholder="student@example.com"
               />
             </label>
@@ -201,7 +229,9 @@ export default function AddStudentPage() {
                 maxLength={20}
                 className={inputClass}
                 value={form.phone_number}
-                onChange={(e) => updateField("phone_number", e.target.value)}
+                onChange={(e) =>
+                  updateField("phone_number", e.target.value)
+                }
                 placeholder="Enter phone number"
               />
             </label>
@@ -211,10 +241,12 @@ export default function AddStudentPage() {
               <input
                 required
                 type="date"
-                max={new Date().toISOString().slice(0, 10)}
+                max={new Date().toLocaleDateString("en-CA")}
                 className={inputClass}
                 value={form.date_of_birth}
-                onChange={(e) => updateField("date_of_birth", e.target.value)}
+                onChange={(e) =>
+                  updateField("date_of_birth", e.target.value)
+                }
               />
             </label>
 
@@ -224,7 +256,9 @@ export default function AddStudentPage() {
                 required
                 className={inputClass}
                 value={form.gender}
-                onChange={(e) => updateField("gender", e.target.value)}
+                onChange={(e) =>
+                  updateField("gender", e.target.value)
+                }
               >
                 <option value="">Select gender</option>
                 <option value="Male">Male</option>
@@ -242,7 +276,9 @@ export default function AddStudentPage() {
                 className={inputClass}
                 placeholder="e.g. B.Tech Computer Science"
                 value={form.course}
-                onChange={(e) => updateField("course", e.target.value)}
+                onChange={(e) =>
+                  updateField("course", e.target.value)
+                }
               />
             </label>
 
@@ -255,7 +291,9 @@ export default function AddStudentPage() {
                 rows={3}
                 className={inputClass}
                 value={form.address}
-                onChange={(e) => updateField("address", e.target.value)}
+                onChange={(e) =>
+                  updateField("address", e.target.value)
+                }
                 placeholder="Enter complete address"
               />
             </label>
@@ -264,7 +302,7 @@ export default function AddStudentPage() {
           <button
             type="submit"
             disabled={saving}
-            className="w-full rounded-xl bg-blue-600 px-5 py-3.5 font-semibold text-white hover:bg-blue-700 disabled:opacity-50 transition shadow-sm"
+            className="w-full rounded-xl bg-[#1F6F6B] px-5 py-3.5 font-semibold text-white shadow-sm transition hover:bg-[#185956] disabled:cursor-not-allowed disabled:opacity-50"
           >
             {saving ? "Saving..." : "Save Student"}
           </button>
