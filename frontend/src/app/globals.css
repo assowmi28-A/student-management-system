@@ -1,0 +1,57 @@
+:root {
+  --color-bg: #f5f6f8;
+  --color-surface: #ffffff;
+  --color-text: #1f2933;
+  --color-muted: #52606d;
+  --color-primary: #1d4ed8;
+  --color-border: #d9dde3;
+  --color-success: #1a7f4b;
+  --color-error: #b42318;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  line-height: 1.5;
+}
+
+.container {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.site-header {
+  background: var(--color-primary);
+  color: #fff;
+  padding: 0.9rem 0;
+  font-weight: 600;
+}
+
+main.container {
+  padding-top: 1.5rem;
+  padding-bottom: 2rem;
+}
+
+.card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 1.25rem;
+}
+
+.status-connected { color: var(--color-success); }
+.status-unreachable { color: var(--color-error); }
+.status-checking { color: var(--color-muted); }
+
+@media (min-width: 768px) {
+  .container { padding: 0 1.5rem; }
+  .card { padding: 2rem; }
+}
