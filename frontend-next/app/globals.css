@@ -170,7 +170,8 @@ main > div > div.mb-5 input:focus {
 
 /* ---------- Records table card ---------- */
 
-main > div > div.overflow-x-auto {
+main > div > div.students-table-card {
+  width: 100%;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   border: 1px solid #DDD5C4;
@@ -178,6 +179,10 @@ main > div > div.overflow-x-auto {
   background: #ffffff;
   box-shadow: 0 10px 30px rgba(31, 52, 100, 0.06);
   max-width: 100%;
+}
+
+.student-cards {
+  display: none;
 }
 
 main table {
@@ -385,17 +390,78 @@ main .fixed.inset-0 section button {
     gap: 12px;
   }
 
-  main table thead th,
-  main table tbody td {
-    padding: 12px 10px;
-    font-size: 13px;
+  .student-cards {
+    display: grid;
+    width: 100%;
+    min-width: 0;
+    gap: 12px;
   }
 
-  main table td button {
-    min-height: 32px;
-    min-width: 48px;
-    padding: 5px 8px;
+  main > div > div.students-table-card {
+    display: none;
+  }
+
+  .student-card {
+    min-width: 0;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: #ffffff;
+    box-shadow: 0 4px 12px rgba(31, 52, 100, 0.05);
+  }
+
+  .student-card-fields {
+    display: grid;
+    min-width: 0;
+    padding: 4px 12px;
+  }
+
+  .student-card-field {
+    display: grid;
+    min-width: 0;
+    grid-template-columns: 88px minmax(0, 1fr);
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid #EEE7DA;
+  }
+
+  .student-card-label {
+    color: var(--muted);
     font-size: 11px;
+    font-weight: 700;
+  }
+
+  .student-card-value {
+    min-width: 0;
+    color: #33445f;
+    font-size: 13px;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+  }
+
+  .student-card-actions {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    padding: 12px;
+  }
+
+  .student-card-actions button {
+    width: 100%;
+    min-width: 0;
+    min-height: 38px;
+    padding: 6px 8px;
+    font-size: 12px;
+    white-space: nowrap;
+  }
+
+  .mobile-empty-state {
+    padding: 24px 16px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: #ffffff;
+    color: var(--muted);
+    text-align: center;
   }
 }
 
@@ -418,10 +484,14 @@ main .fixed.inset-0 section button {
     font-size: 12px;
   }
 
-  main table thead th,
-  main table tbody td {
-    padding: 10px 8px;
-    font-size: 12px;
+  .student-card-field {
+    grid-template-columns: 76px minmax(0, 1fr);
+    gap: 8px;
+  }
+
+  .student-card-actions {
+    gap: 6px;
+    padding: 10px;
   }
 }
 
