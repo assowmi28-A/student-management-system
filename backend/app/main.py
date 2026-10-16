@@ -9,9 +9,11 @@ from sqlalchemy.orm import Session
 from .database import Base, engine, SessionLocal
 from . import models, schemas
 
+
 app = FastAPI(title="Student Management API")
 
-# Allow the local frontend and deployed Vercel frontend.
+
+# Allow local frontend and deployed Vercel frontends.
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
@@ -19,16 +21,14 @@ app.add_middleware(
         "http://127.0.0.1:3000",
         "http://localhost:5500",
         "http://127.0.0.1:5500",
+        "https://student-management-system-theta-vert.vercel.app",
         "https://student-management-system-dj9x.vercel.app",
     ],
     allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
-    allow_credentials=False,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+
 
 Base.metadata.create_all(bind=engine)
 
@@ -107,8 +107,13 @@ def apply_fields(record: models.Student, student: schemas.StudentCreate):
 
 def get_student_or_404(db: Session, student_id: int):
     student = db.get(models.Student, student_id)
+
     if student is None:
-        raise HTTPException(status_code=404, detail="Student not found")
+        raise HTTPException(
+            status_code=404,
+            detail="Student not found",
+        )
+
     return student
 
 
@@ -125,7 +130,7 @@ def health():
 @app.get("/courses")
 def get_courses(db: Session = Depends(get_db)):
     rows = db.query(models.Student.course).distinct().all()
-    courses = sorted({r[0] for r in rows if r[0]})
+    courses = sorted({row[0] for row in rows if row[0]})
     return {"total": len(courses), "courses": courses}
 
 
@@ -148,9 +153,11 @@ def create_student(
     validate_payload(student)
 
     email = str(student.email).strip().lower()
-    duplicate = db.query(models.Student).filter(
-        models.Student.email == email
-    ).first()
+    duplicate = (
+        db.query(models.Student)
+        .filter(models.Student.email == email)
+        .first()
+    )
 
     if duplicate:
         raise HTTPException(
@@ -172,6 +179,7 @@ def create_student(
         )
 
     db.refresh(new_student)
+
     return {
         "message": "Student added successfully",
         "student": student_data(new_student),
@@ -188,10 +196,14 @@ def update_student(
     validate_payload(student)
 
     email = str(student.email).strip().lower()
-    duplicate = db.query(models.Student).filter(
-        models.Student.email == email,
-        models.Student.id != student_id,
-    ).first()
+    duplicate = (
+        db.query(models.Student)
+        .filter(
+            models.Student.email == email,
+            models.Student.id != student_id,
+        )
+        .first()
+    )
 
     if duplicate:
         raise HTTPException(
@@ -211,6 +223,7 @@ def update_student(
         )
 
     db.refresh(existing)
+
     return {
         "message": "Student updated successfully",
         "student": student_data(existing),
@@ -222,4 +235,6 @@ def delete_student(student_id: int, db: Session = Depends(get_db)):
     student = get_student_or_404(db, student_id)
     db.delete(student)
     db.commit()
+
     return {"message": "Student deleted successfully"}
+

@@ -1,9 +1,11 @@
-﻿
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+const API_URL = (
+  process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000"
+).replace(/\/+$/, "");
 
 type StudentForm = {
   first_name: string;
@@ -43,22 +45,27 @@ export default function AddStudentPage() {
     setError("");
 
     if (Object.values(form).some((value) => !value.trim())) {
-      setError("Ella fields-um fill pannunga.");
+      setError("Please fill in all required fields.");
       return;
     }
 
     if (!/^\S+@\S+\.\S+$/.test(form.email.trim())) {
-      setError("Valid email address enter pannunga.");
+      setError("Please enter a valid email address.");
       return;
     }
 
     if (form.phone_number.trim().length < 7) {
-      setError("Phone number minimum 7 characters irukkanum.");
+      setError("Phone number must be at least 7 characters.");
       return;
     }
 
-    if (form.course.trim().length < 2 || form.address.trim().length < 5) {
-      setError("Course and address details correct-ah enter pannunga.");
+    if (form.course.trim().length < 2) {
+      setError("Course must be at least 2 characters.");
+      return;
+    }
+
+    if (form.address.trim().length < 5) {
+      setError("Address must be at least 5 characters.");
       return;
     }
 
@@ -67,7 +74,7 @@ export default function AddStudentPage() {
     today.setHours(0, 0, 0, 0);
 
     if (Number.isNaN(dob.getTime()) || dob >= today) {
-      setError("Past date of birth select pannunga.");
+      setError("Please select a date of birth in the past.");
       return;
     }
 
@@ -95,7 +102,7 @@ export default function AddStudentPage() {
           ? data.detail.map((item: { msg?: string }) => item.msg).join(", ")
           : data.detail;
 
-        throw new Error(detail || "Student save panna mudiyala.");
+        throw new Error(detail || "Could not save student record.");
       }
 
       setMessage("Student successfully added!");
@@ -104,7 +111,7 @@ export default function AddStudentPage() {
       setError(
         err instanceof Error
           ? err.message
-          : "Backend connection check pannunga."
+          : "Could not connect to backend server. Please verify it is running."
       );
     } finally {
       setSaving(false);
@@ -112,89 +119,113 @@ export default function AddStudentPage() {
   }
 
   const inputClass =
-    "mt-1 w-full rounded-xl border border-slate-300 bg-white p-3 text-slate-900 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100";
+    "mt-1 w-full rounded-xl border border-slate-300 bg-white p-3 text-slate-900 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 text-base transition";
 
   return (
-    <main className="min-h-screen bg-slate-50 p-6 text-slate-900 md:p-10">
+    <main className="min-h-screen bg-slate-50 p-4 sm:p-6 md:p-10 text-slate-900">
       <div className="mx-auto max-w-3xl">
-        <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+        <header className="mb-6 flex flex-wrap items-center justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold">Add Student</h1>
-            <p className="mt-2 text-slate-600">
-              Student details enter panni save pannunga.
+            <h1 className="text-2xl font-bold sm:text-3xl">Add Student</h1>
+            <p className="mt-1 text-sm text-slate-600 sm:text-base">
+              Enter student details to add a new record.
             </p>
           </div>
 
-          <a
+          <Link
             href="/students"
-            className="rounded-xl border border-slate-300 bg-white px-4 py-3 font-semibold hover:bg-slate-100"
+            className="inline-flex w-full sm:w-auto items-center justify-center rounded-xl border border-slate-300 bg-white px-5 py-3 font-semibold text-slate-700 hover:bg-slate-50 transition shadow-sm text-sm"
           >
             View Records
-          </a>
-        </div>
+          </Link>
+        </header>
 
         <form
           onSubmit={handleSubmit}
-          className="space-y-5 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
+          className="space-y-5 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6 md:p-8"
         >
           {error && (
-            <p role="alert" className="rounded-xl bg-red-50 p-4 text-red-700">
+            <div role="alert" className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700 break-words">
               {error}
-            </p>
+            </div>
           )}
 
           {message && (
-            <p role="status" className="rounded-xl bg-green-50 p-4 text-green-700">
+            <div role="status" className="rounded-xl border border-green-200 bg-green-50 p-4 text-sm text-green-700 break-words">
               {message}
-            </p>
+            </div>
           )}
 
-          <div className="grid gap-5 sm:grid-cols-2">
+          <div className="grid gap-4 sm:gap-5 sm:grid-cols-2">
             <label className="text-sm font-semibold">
               First Name *
-              <input required maxLength={100} className={inputClass}
+              <input
+                required
+                maxLength={100}
+                className={inputClass}
                 value={form.first_name}
                 onChange={(e) => updateField("first_name", e.target.value)}
-                placeholder="Enter first name" />
+                placeholder="Enter first name"
+              />
             </label>
 
             <label className="text-sm font-semibold">
               Last Name *
-              <input required maxLength={100} className={inputClass}
+              <input
+                required
+                maxLength={100}
+                className={inputClass}
                 value={form.last_name}
                 onChange={(e) => updateField("last_name", e.target.value)}
-                placeholder="Enter last name" />
+                placeholder="Enter last name"
+              />
             </label>
 
             <label className="text-sm font-semibold">
               Email *
-              <input required type="email" className={inputClass}
+              <input
+                required
+                type="email"
+                className={inputClass}
                 value={form.email}
                 onChange={(e) => updateField("email", e.target.value)}
-                placeholder="student@example.com" />
+                placeholder="student@example.com"
+              />
             </label>
 
             <label className="text-sm font-semibold">
               Phone Number *
-              <input required minLength={7} maxLength={20} className={inputClass}
+              <input
+                required
+                minLength={7}
+                maxLength={20}
+                className={inputClass}
                 value={form.phone_number}
                 onChange={(e) => updateField("phone_number", e.target.value)}
-                placeholder="Enter phone number" />
+                placeholder="Enter phone number"
+              />
             </label>
 
             <label className="text-sm font-semibold">
               Date of Birth *
-              <input required type="date"
-                max="9999-12-31"
+              <input
+                required
+                type="date"
+                max={new Date().toISOString().slice(0, 10)}
                 className={inputClass}
                 value={form.date_of_birth}
-                onChange={(e) => updateField("date_of_birth", e.target.value)} />
+                onChange={(e) => updateField("date_of_birth", e.target.value)}
+              />
             </label>
 
             <label className="text-sm font-semibold">
               Gender *
-              <select required className={inputClass} value={form.gender}
-                onChange={(e) => updateField("gender", e.target.value)}>
+              <select
+                required
+                className={inputClass}
+                value={form.gender}
+                onChange={(e) => updateField("gender", e.target.value)}
+              >
                 <option value="">Select gender</option>
                 <option value="Male">Male</option>
                 <option value="Female">Female</option>
@@ -204,26 +235,36 @@ export default function AddStudentPage() {
 
             <label className="text-sm font-semibold sm:col-span-2">
               Course / Department *
-              <input required minLength={2} maxLength={100} className={inputClass}
-                placeholder="B.Tech AI & DS"
+              <input
+                required
+                minLength={2}
+                maxLength={100}
+                className={inputClass}
+                placeholder="e.g. B.Tech Computer Science"
                 value={form.course}
-                onChange={(e) => updateField("course", e.target.value)} />
+                onChange={(e) => updateField("course", e.target.value)}
+              />
             </label>
 
             <label className="text-sm font-semibold sm:col-span-2">
               Address *
-              <textarea required minLength={5} maxLength={500} rows={3}
+              <textarea
+                required
+                minLength={5}
+                maxLength={500}
+                rows={3}
                 className={inputClass}
                 value={form.address}
                 onChange={(e) => updateField("address", e.target.value)}
-                placeholder="Enter complete address" />
+                placeholder="Enter complete address"
+              />
             </label>
           </div>
 
           <button
             type="submit"
             disabled={saving}
-            className="w-full rounded-xl bg-blue-600 px-5 py-3 font-semibold text-white hover:bg-blue-700 disabled:opacity-50"
+            className="w-full rounded-xl bg-blue-600 px-5 py-3.5 font-semibold text-white hover:bg-blue-700 disabled:opacity-50 transition shadow-sm"
           >
             {saving ? "Saving..." : "Save Student"}
           </button>
@@ -232,5 +273,3 @@ export default function AddStudentPage() {
     </main>
   );
 }
-
-
