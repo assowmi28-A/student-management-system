@@ -340,23 +340,109 @@ export default function StudentsPage() {
             <p className="mt-3 font-medium text-slate-600">Loading students...</p>
           </div>
         ) : (
-          <div
-            className="w-full !overflow-x-auto overflow-x-auto rounded-2xl border border-[#DDD5C4] bg-white shadow-sm"
-            style={{ overflowX: "auto", WebkitOverflowScrolling: "touch" }}
-          >
+          <>
+            <div className="student-cards">
+              {refreshing && (
+                <div className="h-0.5 w-full overflow-hidden bg-slate-100">
+                  <div className="h-full animate-pulse bg-[#1F6F6B]" style={{ width: "60%" }} />
+                </div>
+              )}
+
+              {filtered.length === 0 ? (
+                <div className="mobile-empty-state">
+                  <p className="text-base font-semibold text-slate-700">
+                    No students found.
+                  </p>
+                  <p className="mt-1 text-sm">
+                    {search.trim()
+                      ? `No student records match "${search}". Try adjusting your search query.`
+                      : "No student records available yet."}
+                  </p>
+                  {search.trim() ? (
+                    <button
+                      type="button"
+                      onClick={() => setSearch("")}
+                      className="mt-3 rounded-lg border border-[#DDD5C4] px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-100 transition"
+                    >
+                      Clear Search
+                    </button>
+                  ) : (
+                    <Link
+                      href="/add-student"
+                      className="mt-3 inline-block rounded-lg bg-[#1F6F6B] px-4 py-2 text-xs font-semibold text-white hover:bg-[#185956] transition"
+                    >
+                      + Add First Student
+                    </Link>
+                  )}
+                </div>
+              ) : (
+                filtered.map((student) => {
+                  const displayName =
+                    student.name ||
+                    `${student.first_name || ""} ${student.last_name || ""}`.trim() ||
+                    `Student #${student.id}`;
+                  const fields: Array<[string, string]> = [
+                    ["Name", displayName],
+                    ["Email", student.email],
+                    ["Phone", student.phone_number || "Not provided"],
+                    ["Course", student.course || "Not provided"],
+                    ["Date of birth", student.date_of_birth || "Not provided"],
+                    ["Address", student.address || "Not provided"],
+                    ["Gender", student.gender || "Not provided"],
+                    ["Age", student.age === undefined ? "Not provided" : String(student.age)],
+                    ["Student ID", String(student.id)],
+                  ];
+
+                  return (
+                    <article className="student-card" key={student.id}>
+                      <div className="student-card-fields">
+                        {fields.map(([label, value]) => (
+                          <div className="student-card-field" key={label}>
+                            <span className="student-card-label">{label}</span>
+                            <span className="student-card-value">{value}</span>
+                          </div>
+                        ))}
+                      </div>
+                      <div className="student-card-actions">
+                        <button
+                          type="button"
+                          onClick={() => viewStudent(student)}
+                          className="rounded-lg bg-[#D8E9E5] px-2.5 py-1.5 text-xs font-semibold text-[#1F6F6B] hover:bg-[#C6DFD9] transition"
+                        >
+                          View
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setEditing(student);
+                            setEditError("");
+                          }}
+                          className="rounded-lg bg-amber-100 px-2.5 py-1.5 text-xs font-semibold text-amber-800 hover:bg-amber-200 transition"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => void deleteStudent(student)}
+                          className="rounded-lg bg-red-100 px-2.5 py-1.5 text-xs font-semibold text-red-700 hover:bg-red-200 transition"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </article>
+                  );
+                })
+              )}
+            </div>
+
+            <div className="students-table-card">
             {/* Silent refresh indicator â€” table stays visible */}
             {refreshing && (
               <div className="h-0.5 w-full overflow-hidden bg-slate-100">
                 <div className="h-full animate-pulse bg-[#1F6F6B]" style={{ width: "60%" }} />
               </div>
             )}
-            {/* Mobile horizontal scroll banner indicator */}
-            <div className="sm:hidden px-4 py-2 bg-[#F5F1E8] border-b border-slate-100 text-[11px] font-medium text-[#6B6358] flex items-center justify-between">
-              <span>â† Scroll table to view all fields â†’</span>
-              <span className="font-semibold text-slate-700">{filtered.length} {filtered.length === 1 ? "record" : "records"}</span>
-            </div>
-
-            <table className="w-full min-w-[580px] md:min-w-full text-left">
+            <table className="students-table w-full min-w-[580px] md:min-w-full text-left">
               <thead className="bg-slate-100">
                 <tr>
                   <th className="p-3 sm:p-4 font-semibold text-xs sm:text-sm">Name</th>
@@ -378,25 +464,24 @@ export default function StudentsPage() {
                   return (
                     <tr
                       key={student.id}
-                      className="border-t border-[#DDD5C4] hover:bg-[#F5F1E8] transition"
+                      className="student-card-row border-t border-[#DDD5C4] hover:bg-[#F5F1E8] transition"
                     >
-                      <td className="p-3 sm:p-4 font-medium text-[#1F1B16] whitespace-nowrap">
+                      <td data-label="Name" className="p-3 sm:p-4 font-medium text-[#1F1B16] whitespace-nowrap">
                         {displayName}
                       </td>
-                      <td className="p-3 sm:p-4 text-slate-700">
+                      <td data-label="Email" className="p-3 sm:p-4 text-slate-700">
                         {student.email}
                       </td>
-                      <td className="p-3 sm:p-4 text-slate-700 whitespace-nowrap">
+                      <td data-label="Phone" className="p-3 sm:p-4 text-slate-700 whitespace-nowrap">
                         {student.phone_number || "â€”"}
                       </td>
-                      <td className="p-3 sm:p-4 whitespace-nowrap">
+                      <td data-label="Course" className="p-3 sm:p-4 whitespace-nowrap">
                         <span className="rounded-full bg-[#F0E9DA] px-2.5 py-1 text-xs font-medium text-[#1F6F6B] border border-blue-100">
                           {student.course || "â€”"}
                         </span>
                       </td>
-                      <td className="p-3 sm:p-4 whitespace-nowrap text-sm text-[#6B6358]">{student.date_of_birth || "—"}</td>
-
-                      <td className="p-3 sm:p-4 whitespace-nowrap">
+                      <td data-label="Date of birth" className="p-3 sm:p-4 whitespace-nowrap text-sm text-[#6B6358]">{student.date_of_birth || "—"}</td>
+                      <td data-label="Actions" className="p-3 sm:p-4 whitespace-nowrap">
                         <div className="flex items-center gap-1.5 sm:gap-2">
                           <button
                             type="button"
@@ -463,6 +548,7 @@ export default function StudentsPage() {
               </tbody>
             </table>
           </div>
+          </>
         )}
 
         {/* View complete student details modal */}
