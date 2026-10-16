@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState, useMemo, useRef, useCallback } from "react";
 import Link from "next/link";
@@ -52,7 +52,7 @@ export default function StudentsPage() {
     try {
       const response = await fetch(`${API_URL}/students`, {
         signal: controller.signal,
-        // cache: "no-store" is sufficient — browsers ignore Cache-Control/Pragma
+        // cache: "no-store" is sufficient â€” browsers ignore Cache-Control/Pragma
         // in fetch() request init headers; those are response-header concepts.
         cache: "no-store",
         headers: { Accept: "application/json" },
@@ -132,7 +132,7 @@ export default function StudentsPage() {
     });
   }, [students, search]);
 
-  // Performance: open modal immediately from existing state — no extra network
+  // Performance: open modal immediately from existing state â€” no extra network
   // request needed because GET /students already returns all fields.
   function viewStudent(student: Student) {
     setViewing(student);
@@ -275,19 +275,19 @@ export default function StudentsPage() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-50 p-4 sm:p-6 md:p-10 text-slate-900">
+    <main className="min-h-screen bg-[#F5F1E8] p-4 sm:p-6 md:p-10 text-[#1F1B16]">
       <div className="mx-auto max-w-6xl">
         <header className="mb-6 flex flex-wrap items-center justify-between gap-4">
           <div>
             <h1 className="text-2xl font-bold sm:text-3xl">Student Records</h1>
-            <p className="mt-1 text-sm text-slate-500 sm:text-base">
+            <p className="mt-1 text-sm text-[#6B6358] sm:text-base">
               Manage student information
             </p>
           </div>
 
           <Link
             href="/add-student"
-            className="inline-flex w-full sm:w-auto items-center justify-center rounded-xl bg-blue-600 px-5 py-3 font-semibold text-white hover:bg-blue-700 transition shadow-sm text-sm"
+            className="inline-flex w-full sm:w-auto items-center justify-center rounded-xl bg-[#1F6F6B] px-5 py-3 font-semibold text-white hover:bg-[#185956] transition shadow-sm text-sm"
           >
             + Add Student
           </Link>
@@ -300,7 +300,7 @@ export default function StudentsPage() {
 
           <div className="flex w-full items-center gap-2 sm:w-auto">
             <input
-              className="min-w-0 flex-1 sm:w-80 sm:flex-none rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm sm:text-base outline-none focus:border-blue-500 transition shadow-sm"
+              className="min-w-0 flex-1 sm:w-80 sm:flex-none rounded-xl border border-[#DDD5C4] bg-white px-4 py-3 text-sm sm:text-base outline-none focus:border-[#1F6F6B] transition shadow-sm"
               placeholder="Search name, email, course..."
               value={search}
               onChange={(event) => setSearch(event.target.value)}
@@ -310,10 +310,10 @@ export default function StudentsPage() {
               type="button"
               onClick={() => void loadStudents(students.length > 0)}
               disabled={loading || refreshing}
-              className="shrink-0 rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm font-semibold hover:bg-slate-50 disabled:opacity-50 transition shadow-sm"
+              className="shrink-0 rounded-xl border border-[#DDD5C4] bg-white px-4 py-3 text-sm font-semibold hover:bg-[#F5F1E8] disabled:opacity-50 transition shadow-sm"
               title="Refresh students list"
             >
-              {refreshing ? "↻" : loading ? "..." : "Refresh"}
+              {refreshing ? "â†»" : loading ? "..." : "Refresh"}
             </button>
           </div>
         </div>
@@ -335,24 +335,24 @@ export default function StudentsPage() {
         )}
 
         {loading ? (
-          <div className="rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-sm">
+          <div className="rounded-2xl border border-[#DDD5C4] bg-white p-8 text-center shadow-sm">
             <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
             <p className="mt-3 font-medium text-slate-600">Loading students...</p>
           </div>
         ) : (
           <div
-            className="w-full !overflow-x-auto overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm"
+            className="w-full !overflow-x-auto overflow-x-auto rounded-2xl border border-[#DDD5C4] bg-white shadow-sm"
             style={{ overflowX: "auto", WebkitOverflowScrolling: "touch" }}
           >
-            {/* Silent refresh indicator — table stays visible */}
+            {/* Silent refresh indicator â€” table stays visible */}
             {refreshing && (
               <div className="h-0.5 w-full overflow-hidden bg-slate-100">
-                <div className="h-full animate-pulse bg-blue-500" style={{ width: "60%" }} />
+                <div className="h-full animate-pulse bg-[#1F6F6B]" style={{ width: "60%" }} />
               </div>
             )}
             {/* Mobile horizontal scroll banner indicator */}
-            <div className="sm:hidden px-4 py-2 bg-slate-50 border-b border-slate-100 text-[11px] font-medium text-slate-500 flex items-center justify-between">
-              <span>← Scroll table to view all fields →</span>
+            <div className="sm:hidden px-4 py-2 bg-[#F5F1E8] border-b border-slate-100 text-[11px] font-medium text-[#6B6358] flex items-center justify-between">
+              <span>â† Scroll table to view all fields â†’</span>
               <span className="font-semibold text-slate-700">{filtered.length} {filtered.length === 1 ? "record" : "records"}</span>
             </div>
 
@@ -363,6 +363,7 @@ export default function StudentsPage() {
                   <th className="p-3 sm:p-4 font-semibold text-xs sm:text-sm">Email</th>
                   <th className="p-3 sm:p-4 font-semibold text-xs sm:text-sm">Phone</th>
                   <th className="p-3 sm:p-4 font-semibold text-xs sm:text-sm">Course</th>
+                  <th className="p-3 sm:p-4 font-semibold text-xs sm:text-sm">Date of birth</th>
                   <th className="p-3 sm:p-4 font-semibold text-xs sm:text-sm">Actions</th>
                 </tr>
               </thead>
@@ -372,34 +373,35 @@ export default function StudentsPage() {
                   const displayName =
                     student.name ||
                     `${student.first_name || ""} ${student.last_name || ""}`.trim() ||
-                    "—";
+                    "â€”";
 
                   return (
                     <tr
                       key={student.id}
-                      className="border-t border-slate-200 hover:bg-slate-50 transition"
+                      className="border-t border-[#DDD5C4] hover:bg-[#F5F1E8] transition"
                     >
-                      <td className="p-3 sm:p-4 font-medium text-slate-900 whitespace-nowrap">
+                      <td className="p-3 sm:p-4 font-medium text-[#1F1B16] whitespace-nowrap">
                         {displayName}
                       </td>
                       <td className="p-3 sm:p-4 text-slate-700">
                         {student.email}
                       </td>
                       <td className="p-3 sm:p-4 text-slate-700 whitespace-nowrap">
-                        {student.phone_number || "—"}
+                        {student.phone_number || "â€”"}
                       </td>
                       <td className="p-3 sm:p-4 whitespace-nowrap">
-                        <span className="rounded-full bg-blue-50 px-2.5 py-1 text-xs font-medium text-blue-700 border border-blue-100">
-                          {student.course || "—"}
+                        <span className="rounded-full bg-[#F0E9DA] px-2.5 py-1 text-xs font-medium text-[#1F6F6B] border border-blue-100">
+                          {student.course || "â€”"}
                         </span>
                       </td>
+                      <td className="p-3 sm:p-4 whitespace-nowrap text-sm text-[#6B6358]">{student.date_of_birth || "—"}</td>
 
                       <td className="p-3 sm:p-4 whitespace-nowrap">
                         <div className="flex items-center gap-1.5 sm:gap-2">
                           <button
                             type="button"
                             onClick={() => viewStudent(student)}
-                            className="rounded-lg bg-blue-100 px-2.5 py-1.5 text-xs font-semibold text-blue-800 hover:bg-blue-200 transition"
+                            className="rounded-lg bg-[#D8E9E5] px-2.5 py-1.5 text-xs font-semibold text-[#1F6F6B] hover:bg-[#C6DFD9] transition"
                           >
                             View
                           </button>
@@ -430,7 +432,7 @@ export default function StudentsPage() {
 
                 {filtered.length === 0 && (
                   <tr>
-                    <td colSpan={5} className="p-8 text-center text-slate-500">
+                    <td colSpan={6} className="p-8 text-center text-[#6B6358]">
                       <p className="text-base font-semibold text-slate-700">
                         No students found.
                       </p>
@@ -443,14 +445,14 @@ export default function StudentsPage() {
                         <button
                           type="button"
                           onClick={() => setSearch("")}
-                          className="mt-3 rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-100 transition"
+                          className="mt-3 rounded-lg border border-[#DDD5C4] px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-100 transition"
                         >
                           Clear Search
                         </button>
                       ) : (
                         <Link
                           href="/add-student"
-                          className="mt-3 inline-block rounded-lg bg-blue-600 px-4 py-2 text-xs font-semibold text-white hover:bg-blue-700 transition"
+                          className="mt-3 inline-block rounded-lg bg-[#1F6F6B] px-4 py-2 text-xs font-semibold text-white hover:bg-[#185956] transition"
                         >
                           + Add First Student
                         </Link>
@@ -477,12 +479,12 @@ export default function StudentsPage() {
                   <p className="text-xs font-bold uppercase tracking-wider text-blue-600">
                     Student Profile
                   </p>
-                  <h2 className="mt-1 text-xl font-bold sm:text-2xl text-slate-900">
+                  <h2 className="mt-1 text-xl font-bold sm:text-2xl text-[#1F1B16]">
                     {viewing.name ||
                       `${viewing.first_name || ""} ${viewing.last_name || ""}`.trim() ||
                       `Student #${viewing.id}`}
                   </h2>
-                  <p className="mt-0.5 text-xs sm:text-sm text-slate-500">
+                  <p className="mt-0.5 text-xs sm:text-sm text-[#6B6358]">
                     Student ID: {viewing.id}
                   </p>
                 </div>
@@ -490,10 +492,10 @@ export default function StudentsPage() {
                 <button
                   type="button"
                   onClick={() => setViewing(null)}
-                  className="rounded-lg border border-slate-200 px-3 py-1.5 text-sm hover:bg-slate-50 transition"
+                  className="rounded-lg border border-[#DDD5C4] px-3 py-1.5 text-sm hover:bg-[#F5F1E8] transition"
                   aria-label="Close student details"
                 >
-                  ✕
+                  âœ•
                 </button>
               </div>
 
@@ -511,12 +513,12 @@ export default function StudentsPage() {
                 ].map(([label, value]) => (
                   <div
                     key={label}
-                    className="rounded-xl border border-slate-200 bg-slate-50 p-3 sm:p-4"
+                    className="rounded-xl border border-[#DDD5C4] bg-[#F5F1E8] p-3 sm:p-4"
                   >
-                    <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">
+                    <p className="text-[11px] font-semibold uppercase tracking-wide text-[#6B6358]">
                       {label}
                     </p>
-                    <p className="mt-1 break-words text-sm font-medium text-slate-900">
+                    <p className="mt-1 break-words text-sm font-medium text-[#1F1B16]">
                       {value === null || value === undefined || value === ""
                         ? "Not provided"
                         : String(value)}
@@ -555,10 +557,10 @@ export default function StudentsPage() {
                 <button
                   type="button"
                   onClick={() => setEditing(null)}
-                  className="rounded-lg border border-slate-200 px-3 py-1.5 text-sm hover:bg-slate-50 transition"
+                  className="rounded-lg border border-[#DDD5C4] px-3 py-1.5 text-sm hover:bg-[#F5F1E8] transition"
                   aria-label="Close edit modal"
                 >
-                  ✕
+                  âœ•
                 </button>
               </div>
 
@@ -580,7 +582,7 @@ export default function StudentsPage() {
                       editing.name?.split(" ")[0] ||
                       ""
                     }
-                    className="mt-1 w-full rounded-lg border p-2.5 sm:p-3 text-base text-slate-900 outline-none focus:border-blue-500"
+                    className="mt-1 w-full rounded-lg border p-2.5 sm:p-3 text-base text-[#1F1B16] outline-none focus:border-[#1F6F6B]"
                   />
                 </label>
 
@@ -595,7 +597,7 @@ export default function StudentsPage() {
                       editing.name?.split(" ").slice(1).join(" ") ||
                       ""
                     }
-                    className="mt-1 w-full rounded-lg border p-2.5 sm:p-3 text-base text-slate-900 outline-none focus:border-blue-500"
+                    className="mt-1 w-full rounded-lg border p-2.5 sm:p-3 text-base text-[#1F1B16] outline-none focus:border-[#1F6F6B]"
                   />
                 </label>
 
@@ -606,7 +608,7 @@ export default function StudentsPage() {
                     type="email"
                     required
                     defaultValue={editing.email}
-                    className="mt-1 w-full rounded-lg border p-2.5 sm:p-3 text-base text-slate-900 outline-none focus:border-blue-500"
+                    className="mt-1 w-full rounded-lg border p-2.5 sm:p-3 text-base text-[#1F1B16] outline-none focus:border-[#1F6F6B]"
                   />
                 </label>
 
@@ -618,7 +620,7 @@ export default function StudentsPage() {
                     minLength={7}
                     maxLength={20}
                     defaultValue={editing.phone_number || ""}
-                    className="mt-1 w-full rounded-lg border p-2.5 sm:p-3 text-base text-slate-900 outline-none focus:border-blue-500"
+                    className="mt-1 w-full rounded-lg border p-2.5 sm:p-3 text-base text-[#1F1B16] outline-none focus:border-[#1F6F6B]"
                   />
                 </label>
 
@@ -630,7 +632,7 @@ export default function StudentsPage() {
                     required
                     max={new Date().toISOString().slice(0, 10)}
                     defaultValue={editing.date_of_birth || ""}
-                    className="mt-1 w-full rounded-lg border p-2.5 sm:p-3 text-base text-slate-900 outline-none focus:border-blue-500"
+                    className="mt-1 w-full rounded-lg border p-2.5 sm:p-3 text-base text-[#1F1B16] outline-none focus:border-[#1F6F6B]"
                   />
                 </label>
 
@@ -640,7 +642,7 @@ export default function StudentsPage() {
                     name="gender"
                     required
                     defaultValue={editing.gender || ""}
-                    className="mt-1 w-full rounded-lg border p-2.5 sm:p-3 text-base text-slate-900 outline-none focus:border-blue-500"
+                    className="mt-1 w-full rounded-lg border p-2.5 sm:p-3 text-base text-[#1F1B16] outline-none focus:border-[#1F6F6B]"
                   >
                     <option value="">Select gender</option>
                     <option value="Male">Male</option>
@@ -657,7 +659,7 @@ export default function StudentsPage() {
                     minLength={2}
                     maxLength={100}
                     defaultValue={editing.course || ""}
-                    className="mt-1 w-full rounded-lg border p-2.5 sm:p-3 text-base text-slate-900 outline-none focus:border-blue-500"
+                    className="mt-1 w-full rounded-lg border p-2.5 sm:p-3 text-base text-[#1F1B16] outline-none focus:border-[#1F6F6B]"
                   />
                 </label>
 
@@ -670,7 +672,7 @@ export default function StudentsPage() {
                     maxLength={500}
                     rows={3}
                     defaultValue={editing.address || ""}
-                    className="mt-1 w-full rounded-lg border p-2.5 sm:p-3 text-base text-slate-900 outline-none focus:border-blue-500"
+                    className="mt-1 w-full rounded-lg border p-2.5 sm:p-3 text-base text-[#1F1B16] outline-none focus:border-[#1F6F6B]"
                   />
                 </label>
               </div>
@@ -679,7 +681,7 @@ export default function StudentsPage() {
                 <button
                   type="button"
                   onClick={() => setEditing(null)}
-                  className="w-full sm:w-auto rounded-xl border border-slate-300 px-4 py-2.5 font-semibold text-slate-700 hover:bg-slate-50 transition text-sm"
+                  className="w-full sm:w-auto rounded-xl border border-[#DDD5C4] px-4 py-2.5 font-semibold text-slate-700 hover:bg-[#F5F1E8] transition text-sm"
                 >
                   Cancel
                 </button>
@@ -687,7 +689,7 @@ export default function StudentsPage() {
                 <button
                   type="submit"
                   disabled={saving}
-                  className="w-full sm:w-auto rounded-xl bg-blue-600 px-5 py-2.5 font-semibold text-white hover:bg-blue-700 disabled:opacity-50 transition shadow-sm text-sm"
+                  className="w-full sm:w-auto rounded-xl bg-[#1F6F6B] px-5 py-2.5 font-semibold text-white hover:bg-[#185956] disabled:opacity-50 transition shadow-sm text-sm"
                 >
                   {saving ? "Saving..." : "Save Changes"}
                 </button>
@@ -699,3 +701,7 @@ export default function StudentsPage() {
     </main>
   );
 }
+
+
+
+
