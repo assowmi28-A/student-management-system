@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import AppShell from "@/components/AppShell";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -14,10 +15,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <header className="site-header">
-          <div className="container">Student Management System</div>
-        </header>
-        <main className="container">{children}</main>
+        <AppShell>{children}</AppShell>
       </body>
     </html>
   );
