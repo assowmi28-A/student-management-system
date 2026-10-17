@@ -1,6 +1,8 @@
+
 /** Central place for backend communication. */
 export const API_URL =
-  process.env.NEXT_PUBLIC_API_URL ?? "http://127.0.0.1:8000";
+  process.env.NEXT_PUBLIC_API_URL ??
+  "https://student-management-system-7zvb.onrender.com";
 
 export type Student = {
   id: number;
@@ -56,25 +58,37 @@ export async function apiFetch<T>(
   options?: RequestInit
 ): Promise<T> {
   const response = await fetch(`${API_URL}${path}`, {
-    headers: { "Content-Type": "application/json" },
     ...options,
+    headers: {
+      "Content-Type": "application/json",
+      ...options?.headers,
+    },
   });
 
   if (!response.ok) {
     let message = `Request failed with status ${response.status}.`;
+
     try {
       const body: { detail?: string | { msg?: string }[] } =
         await response.json();
+
       if (typeof body.detail === "string") {
         message = body.detail;
       } else if (Array.isArray(body.detail)) {
-        message = body.detail.map((issue) => issue.msg ?? "Invalid input.").join(" ");
+        message = body.detail
+          .map((issue) => issue.msg ?? "Invalid input.")
+          .join(" ");
       }
     } catch {
-      // Keep the HTTP status message when the response has no JSON body.
+      // Keep the HTTP status message if the response has no JSON body.
     }
+
     throw new Error(message);
   }
-  if (response.status === 204) return undefined as T;
+
+  if (response.status === 204) {
+    return undefined as T;
+  }
+
   return response.json() as Promise<T>;
 }
