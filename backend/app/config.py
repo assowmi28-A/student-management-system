@@ -7,14 +7,19 @@ from dotenv import load_dotenv
 load_dotenv()
 
 DATABASE_URL: str = os.getenv("DATABASE_URL", "sqlite:///./students.db")
-CORS_ORIGINS: list[str] = [
-    origin.strip()
-    for origin in os.getenv(
-        "CORS_ORIGINS",
-        "http://localhost:3000,http://127.0.0.1:3000",
-    ).split(",")
-    if origin.strip()
-]
+PRODUCTION_FRONTEND_ORIGIN = "https://student-management-system-1-tfpl.onrender.com"
+CORS_ORIGINS: list[str] = list(
+    dict.fromkeys(
+        origin.strip().rstrip("/")
+        for origin in os.getenv(
+            "CORS_ORIGINS",
+            "http://localhost:3000,http://127.0.0.1:3000",
+        ).split(",")
+        if origin.strip()
+    )
+)
+if PRODUCTION_FRONTEND_ORIGIN not in CORS_ORIGINS:
+    CORS_ORIGINS.append(PRODUCTION_FRONTEND_ORIGIN)
 
 for origin in tuple(CORS_ORIGINS):
     parsed_origin = urlsplit(origin)

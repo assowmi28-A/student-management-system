@@ -10,6 +10,13 @@ from app.routers import health, students
 
 app = FastAPI(title="Student Management API", version="0.1.0")
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=CORS_ORIGINS,
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_headers=["*"],
+)
+
 # Add newly introduced nullable columns before create_all for existing databases.
 student_column_migrations = {
     "email": "VARCHAR(254)",
@@ -33,12 +40,7 @@ if "students" in inspect(engine).get_table_names():
 
 Base.metadata.create_all(bind=engine)
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=CORS_ORIGINS,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
 app.include_router(health.router)
+app.include_router(health.router, prefix="/api")
 app.include_router(students.router)
+app.include_router(students.router, prefix="/api")
