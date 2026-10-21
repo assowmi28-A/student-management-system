@@ -1,0 +1,70 @@
+/* ===== Pagination (connected style: Previous 1 2 3 ... 26 Next) ===== */
+
+.pagination {
+  display: inline-flex;
+  align-items: center;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.page-button,
+.pagination-ellipsis {
+  display: inline-grid;
+  min-width: 40px;
+  height: 38px;
+  place-items: center;
+  margin-left: -1px;
+  padding: 0 14px;
+  border: 1px solid #dee2e6;
+  border-radius: 0;
+  background: #fff;
+  color: var(--color-primary);
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.page-button {
+  cursor: pointer;
+}
+
+.pagination > :first-child {
+  margin-left: 0;
+  border-radius: 6px 0 0 6px;
+}
+
+.pagination > :last-child {
+  border-radius: 0 6px 6px 0;
+}
+
+.pagination-ellipsis {
+  color: #6c757d;
+  cursor: default;
+}
+
+.page-button:hover:not(:disabled):not([aria-current="page"]) {
+  background: #eef4ff;
+}
+
+.page-button[aria-current="page"] {
+  position: relative;
+  z-index: 1;
+  border-color: var(--color-primary);
+  background: var(--color-primary);
+  color: #fff;
+}
+
+.page-button:disabled {
+  color: #6c757d;
+  cursor: not-allowed;
+  opacity: 1;
+}
+
+@media (max-width: 680px) {
+  .page-button,
+  .pagination-ellipsis {
+    min-width: 34px;
+    height: 36px;
+    padding: 0 10px;
+    font-size: 12px;
+  }
+}
