@@ -18,6 +18,8 @@ class Student(Base):
     phone: Mapped[str] = mapped_column(String(13), nullable=False)
     email: Mapped[str | None] = mapped_column(String(254), nullable=True)
     date_of_birth: Mapped[date | None] = mapped_column(Date, nullable=True)
+    age: Mapped[int | None] = mapped_column(Integer, nullable=True)
     gender: Mapped[str | None] = mapped_column(String(20), nullable=True)
+    blood_group: Mapped[str | None] = mapped_column(String(20), nullable=True)
     course: Mapped[str | None] = mapped_column(String(100), nullable=True)
     address: Mapped[str | None] = mapped_column(String(500), nullable=True)

@@ -89,7 +89,7 @@ export default function StudentRecords({
       page: String(page),
       page_size: String(pageSize),
     });
-    apiFetch<StudentPage>(`/api/students?${query.toString()}`)
+    apiFetch<StudentPage>(`/students?${query.toString()}`)
       .then((data) => {
         if (!active) return;
         setResult(data);
@@ -112,7 +112,7 @@ export default function StudentRecords({
   async function deleteStudent(id: number) {
     if (!window.confirm("Delete this student record? This cannot be undone.")) return;
     try {
-      await apiFetch<void>(`/api/students/${id}`, { method: "DELETE" });
+      await apiFetch<void>(`/students/${id}`, { method: "DELETE" });
       setError("");
       setSuccess("Student record deleted successfully.");
       window.dispatchEvent(new Event("students-changed"));

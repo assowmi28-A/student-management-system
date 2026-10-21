@@ -17,7 +17,7 @@ export default function StudentDetailsPage({
 
   useEffect(() => {
     let active = true;
-    apiFetch<Student>(`/api/students/${params.id}`)
+    apiFetch<Student>(`/students/${params.id}`)
       .then((data) => {
         if (active) setStudent(data);
       })
@@ -41,7 +41,7 @@ export default function StudentDetailsPage({
       return;
     }
     try {
-      await apiFetch<void>(`/api/students/${params.id}`, { method: "DELETE" });
+      await apiFetch<void>(`/students/${params.id}`, { method: "DELETE" });
       router.push("/students?success=deleted");
     } catch (reason: unknown) {
       setError(
@@ -68,35 +68,43 @@ export default function StudentDetailsPage({
       <dl className="detail-list">
         <div className="detail-item">
           <dt>First name</dt>
-          <dd>{student.first_name}</dd>
+          <dd>{student.first_name || "—"}</dd>
         </div>
         <div className="detail-item">
           <dt>Last name</dt>
-          <dd>{student.last_name}</dd>
+          <dd>{student.last_name || "—"}</dd>
         </div>
         <div className="detail-item">
           <dt>Phone number</dt>
-          <dd>{student.phone}</dd>
+          <dd>{student.phone || "—"}</dd>
         </div>
         <div className="detail-item">
           <dt>Email</dt>
-          <dd>{student.email ?? "—"}</dd>
+          <dd>{student.email || "—"}</dd>
         </div>
         <div className="detail-item">
           <dt>Date of birth</dt>
-          <dd>{student.date_of_birth ?? "—"}</dd>
+          <dd>{student.date_of_birth || "—"}</dd>
+        </div>
+        <div className="detail-item">
+          <dt>Age</dt>
+          <dd>{student.age ?? "—"}</dd>
         </div>
         <div className="detail-item">
           <dt>Gender</dt>
-          <dd>{student.gender ?? "—"}</dd>
+          <dd>{student.gender || "—"}</dd>
+        </div>
+        <div className="detail-item">
+          <dt>Blood group</dt>
+          <dd>{student.blood_group || "—"}</dd>
         </div>
         <div className="detail-item">
           <dt>Course</dt>
-          <dd>{student.course ?? "—"}</dd>
+          <dd>{student.course || "—"}</dd>
         </div>
         <div className="detail-item detail-item-full">
           <dt>Address</dt>
-          <dd>{student.address ?? "—"}</dd>
+          <dd>{student.address || "—"}</dd>
         </div>
         <div className="detail-item">
           <dt>Record ID</dt>

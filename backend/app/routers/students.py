@@ -16,7 +16,7 @@ from app.schemas import (
     StudentUpdate,
 )
 
-router = APIRouter(prefix="/api/students", tags=["students"])
+router = APIRouter(prefix="/students", tags=["students"])
 
 
 @router.get("/summary", response_model=StudentSummary)
@@ -164,7 +164,7 @@ def update_student(
     student = db.get(Student, student_id)
     if student is None:
         raise HTTPException(status_code=404, detail="Student not found.")
-    for field, value in payload.model_dump().items():
+    for field, value in payload.model_dump(exclude_unset=True).items():
         setattr(student, field, value)
     db.commit()
     db.refresh(student)

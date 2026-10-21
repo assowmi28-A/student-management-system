@@ -18,7 +18,7 @@ export default function HomePage() {
 
   const loadSummary = useCallback(() => {
     setError("");
-    apiFetch<StudentSummary>("/api/students/summary")
+    apiFetch<StudentSummary>("/students/summary")
       .then(setSummary)
       .catch((reason: unknown) => {
         setError(reason instanceof Error ? reason.message : "Could not load dashboard totals.");

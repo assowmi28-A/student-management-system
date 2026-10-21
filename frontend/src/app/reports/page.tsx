@@ -10,7 +10,7 @@ export default function ReportsPage() {
 
   useEffect(() => {
     let active = true;
-    apiFetch<StudentReports>("/api/students/reports")
+    apiFetch<StudentReports>("/students/reports")
       .then((data) => {
         if (active) setReport(data);
       })

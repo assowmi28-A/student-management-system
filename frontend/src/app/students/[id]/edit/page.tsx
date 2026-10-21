@@ -17,7 +17,7 @@ export default function EditStudentPage({
 
   useEffect(() => {
     let active = true;
-    apiFetch<Student>(`/api/students/${params.id}`)
+    apiFetch<Student>(`/students/${params.id}`)
       .then((data) => {
         if (active) setStudent(data);
       })
@@ -37,7 +37,7 @@ export default function EditStudentPage({
   }, [params.id]);
 
   async function updateStudent(value: StudentInput) {
-    await apiFetch<Student>(`/api/students/${params.id}`, {
+    await apiFetch<Student>(`/students/${params.id}`, {
       method: "PUT",
       body: JSON.stringify(value),
     });
@@ -55,13 +55,16 @@ export default function EditStudentPage({
       <h1>Edit student</h1>
       <p className="muted">Update {student.first_name}&apos;s record.</p>
       <StudentForm
+        allowEmptyFields
         initialValue={{
           first_name: student.first_name,
           last_name: student.last_name,
           phone: student.phone,
           email: student.email ?? "",
           date_of_birth: student.date_of_birth ?? "",
+          age: student.age,
           gender: student.gender ?? "",
+          blood_group: student.blood_group ?? "",
           course: student.course ?? "",
           address: student.address ?? "",
         }}

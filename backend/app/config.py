@@ -6,7 +6,35 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-DATABASE_URL: str = os.getenv("DATABASE_URL", "sqlite:///./students.db")
+IS_PRODUCTION = (
+    os.getenv("RENDER", "").strip().lower() in {"1", "true", "yes"}
+    or os.getenv("VERCEL", "").strip().lower() in {"1", "true", "yes"}
+    or os.getenv("APP_ENV", "").strip().lower() in {"prod", "production"}
+)
+DATABASE_URL: str = os.getenv("DATABASE_URL", "").strip()
+if not DATABASE_URL:
+    if IS_PRODUCTION:
+        raise RuntimeError(
+            "DATABASE_URL must be configured in production to use persistent storage."
+        )
+    DATABASE_URL = "sqlite:///./students.db"
+
+if DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = "postgresql+psycopg://" + DATABASE_URL.removeprefix("postgres://")
+elif DATABASE_URL.startswith("postgresql://"):
+    DATABASE_URL = "postgresql+psycopg://" + DATABASE_URL.removeprefix(
+        "postgresql://"
+    )
+elif DATABASE_URL.startswith("postgresql+psycopg2://"):
+    DATABASE_URL = "postgresql+psycopg://" + DATABASE_URL.removeprefix(
+        "postgresql+psycopg2://"
+    )
+
+if IS_PRODUCTION and not DATABASE_URL.startswith("postgresql+psycopg://"):
+    raise RuntimeError(
+        "Production requires a PostgreSQL DATABASE_URL; SQLite is not persistent."
+    )
+
 PRODUCTION_FRONTEND_ORIGIN = "https://student-management-system-1-tfpl.onrender.com"
 CORS_ORIGINS: list[str] = list(
     dict.fromkeys(

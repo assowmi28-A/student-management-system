@@ -8,7 +8,7 @@ export default function NewStudentPage() {
   const router = useRouter();
 
   async function createStudent(student: StudentInput) {
-    await apiFetch("/api/students", {
+    await apiFetch("/students", {
       method: "POST",
       body: JSON.stringify(student),
     });

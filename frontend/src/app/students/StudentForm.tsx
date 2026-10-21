@@ -8,9 +8,28 @@ type StudentFormProps = {
   initialValue?: StudentInput;
   submitLabel: string;
   onSubmit: (student: StudentInput) => Promise<void>;
+  allowEmptyFields?: boolean;
 };
 
 type FormErrors = Partial<Record<keyof StudentInput, string>>;
+type StudentFormValues = Omit<
+  StudentInput,
+  | "age"
+  | "email"
+  | "date_of_birth"
+  | "gender"
+  | "blood_group"
+  | "course"
+  | "address"
+> & {
+  age: string;
+  email: string;
+  date_of_birth: string;
+  gender: string;
+  blood_group: string;
+  course: string;
+  address: string;
+};
 
 const EMAIL_PATTERN =
   /^[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}$/;
@@ -41,24 +60,34 @@ export default function StudentForm({
     phone: "",
     email: "",
     date_of_birth: "",
+    age: null,
     gender: "",
+    blood_group: "",
     course: "",
     address: "",
   },
   submitLabel,
   onSubmit,
+  allowEmptyFields = false,
 }: StudentFormProps) {
   // In the form, `phone` holds only the 10 digits. "+91" is shown as a
   // fixed prefix and added back when the form is submitted.
-  const [form, setForm] = useState<StudentInput>({
+  const [form, setForm] = useState<StudentFormValues>({
     ...initialValue,
     phone: toLocalDigits(initialValue.phone ?? ""),
+    email: initialValue.email ?? "",
+    date_of_birth: initialValue.date_of_birth ?? "",
+    age: initialValue.age?.toString() ?? "",
+    gender: initialValue.gender ?? "",
+    blood_group: initialValue.blood_group ?? "",
+    course: initialValue.course ?? "",
+    address: initialValue.address ?? "",
   });
   const [errors, setErrors] = useState<FormErrors>({});
   const [formError, setFormError] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
-  function updateField(field: keyof StudentInput, value: string) {
+  function updateField(field: keyof StudentFormValues, value: string) {
     setForm((current) => ({ ...current, [field]: value }));
     setErrors((current) => ({ ...current, [field]: undefined }));
   }
@@ -71,13 +100,25 @@ export default function StudentForm({
       first_name: form.first_name.trim(),
       last_name: form.last_name.trim(),
       phone: `+91${phoneDigits}`,
-      email: form.email.trim().toLowerCase(),
-      date_of_birth: form.date_of_birth,
-      gender: form.gender,
-      course: form.course.trim(),
-      address: form.address.trim(),
+      email: form.email.trim().toLowerCase() || null,
+      date_of_birth: form.date_of_birth || null,
+      age: form.age.trim() ? Number(form.age) : null,
+      gender: form.gender || null,
+      blood_group: form.blood_group.trim() || null,
+      course: form.course.trim() || null,
+      address: form.address.trim() || null,
     };
-    setForm({ ...normalized, phone: phoneDigits });
+    setForm({
+      ...normalized,
+      phone: phoneDigits,
+      email: form.email,
+      date_of_birth: form.date_of_birth,
+      age: form.age,
+      gender: form.gender,
+      blood_group: form.blood_group,
+      course: form.course,
+      address: form.address,
+    });
 
     const nextErrors: FormErrors = {};
     if (!normalized.first_name) {
@@ -95,23 +136,41 @@ export default function StudentForm({
     if (!/^\d{10}$/.test(phoneDigits)) {
       nextErrors.phone = "Enter exactly 10 digits after +91.";
     }
-    if (!normalized.email) {
+    if (!normalized.email && !allowEmptyFields) {
       nextErrors.email = "Enter the email address.";
-    } else if (!EMAIL_PATTERN.test(normalized.email)) {
+    } else if (
+      normalized.email &&
+      !EMAIL_PATTERN.test(normalized.email)
+    ) {
       nextErrors.email = "Enter a valid email, e.g. student@gmail.com.";
     }
-    if (!normalized.date_of_birth) {
+    if (!normalized.date_of_birth && !allowEmptyFields) {
       nextErrors.date_of_birth = "Enter the student's date of birth.";
-    } else if (normalized.date_of_birth > new Date().toISOString().slice(0, 10)) {
+    } else if (
+      normalized.date_of_birth &&
+      normalized.date_of_birth > new Date().toISOString().slice(0, 10)
+    ) {
       nextErrors.date_of_birth = "Date of birth cannot be in the future.";
     }
-    if (!["Male", "Female", "Other"].includes(normalized.gender)) {
+    if (
+      form.age.trim() &&
+      (!Number.isInteger(normalized.age) ||
+        normalized.age === null ||
+        normalized.age < 0 ||
+        normalized.age > 150)
+    ) {
+      nextErrors.age = "Enter an age from 0 to 150, or leave it blank.";
+    }
+    if (
+      !allowEmptyFields &&
+      !["Male", "Female", "Other"].includes(normalized.gender ?? "")
+    ) {
       nextErrors.gender = "Select a gender.";
     }
-    if (!normalized.course) {
+    if (!normalized.course && !allowEmptyFields) {
       nextErrors.course = "Enter the student's course.";
     }
-    if (!normalized.address) {
+    if (!normalized.address && !allowEmptyFields) {
       nextErrors.address = "Enter the student's address.";
     }
     setErrors(nextErrors);
@@ -243,6 +302,27 @@ export default function StudentForm({
           )}
         </div>
         <div className="field">
+          <label htmlFor="age">Age</label>
+          <input
+            id="age"
+            name="age"
+            type="number"
+            min={0}
+            max={150}
+            step={1}
+            inputMode="numeric"
+            value={form.age}
+            aria-invalid={Boolean(errors.age)}
+            aria-describedby={errors.age ? "age-error" : "age-hint"}
+            onChange={(event) => updateField("age", event.target.value)}
+          />
+          {errors.age ? (
+            <p className="field-error" id="age-error">{errors.age}</p>
+          ) : (
+            <p className="field-hint" id="age-hint">Optional; enter a whole number.</p>
+          )}
+        </div>
+        <div className="field">
           <label htmlFor="gender">Gender</label>
           <select
             id="gender"
@@ -261,6 +341,17 @@ export default function StudentForm({
           {errors.gender && (
             <p className="field-error" id="gender-error">{errors.gender}</p>
           )}
+        </div>
+        <div className="field">
+          <label htmlFor="blood_group">Blood group</label>
+          <input
+            id="blood_group"
+            name="blood_group"
+            maxLength={20}
+            placeholder="e.g. O+"
+            value={form.blood_group}
+            onChange={(event) => updateField("blood_group", event.target.value)}
+          />
         </div>
         <div className="field">
           <label htmlFor="course">Course</label>
