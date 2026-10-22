@@ -78,8 +78,8 @@ def student_reports(db: Session = Depends(get_db)) -> StudentReports:
     gender_rows = db.execute(
         select(gender_label, func.count())
         .select_from(Student)
-        .group_by(func.lower(gender_label))
-        .order_by(func.lower(gender_label))
+        .group_by(gender_label)
+        .order_by(gender_label)
     ).all()
     known_gender_total = summary.male_students + summary.female_students
     return StudentReports(
