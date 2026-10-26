@@ -117,20 +117,31 @@ and any Preview domain you test.
 
 ### Production hosting: Render backend and Vercel frontend
 
-The FastAPI backend is hosted as a Render Web Service, and the Next.js
-frontend is deployed to Vercel. The frontend's `vercel.json` proxies
-same-origin `/api/*` requests to
-`https://student-management-system-7zvb.onrender.com/api/*`. This is the
-currently verified backend URL; `/api/health` and `/api/students/summary`
-return HTTP 200 through both the Render URL and the Vercel proxy.
+The FastAPI backend is hosted as the existing Render Web Service
+`student-management-api`, and the Next.js frontend is deployed to Vercel.
+Confirm the backend's public URL in Render before configuring frontend routing:
+the current Vercel rewrite still targets the older
+`student-management-system-7zvb.onrender.com` hostname. Do not infer the public
+URL from the service display name; update the rewrite and frontend API fallback
+only after verifying the URL in the Render dashboard.
 
-Keep the backend's `DATABASE_URL` configured in the Render service to point to
-the persistent PostgreSQL database. The frontend does not need database
-credentials. Because the Vercel rewrite is same-origin from the browser,
-browser CORS settings are not required for this frontend-to-backend path.
-Deploy backend changes to the existing Render service, then deploy frontend
-changes to the Vercel project. Do not switch the Vercel rewrite to another
-backend unless that backend has been deployed and its endpoints verified.
+The Render blueprint does not create a database or store database credentials.
+Set the backend's `DATABASE_URL` in the existing Render Web Service to the
+**Internal Database URL** for `student-management-db`. Keep database credentials
+in Render; never put them in source control or frontend environment variables.
+Production startup rejects SQLite URLs, and `/api/health` verifies that the
+configured database can execute a query. A successful health check does not
+verify the expected student record count.
+
+The Vercel rewrite is same-origin from the browser, so browser CORS settings
+are not required for this frontend-to-backend path. Deploy backend changes to
+the existing Render service, then deploy frontend changes to the Vercel
+project. Before migrating student data, create and verify backups of both the
+source SQLite database and destination PostgreSQL database. The migration
+script is additive: it leaves identical student IDs unchanged and stops on
+conflicting IDs; verify the migrated IDs and fields before considering the
+migration complete. Do not switch the Vercel rewrite to another backend unless
+that backend has been deployed and its endpoints verified.
 
 ### Production frontend build
 
@@ -159,14 +170,15 @@ table are created automatically when the backend starts. Set `DATABASE_URL` in
 The repository includes a root-level `render.yaml` Blueprint for the FastAPI
 web service. It uses `backend` as the service root, installs
 `backend/requirements.txt`, starts `app.main:app`, and checks `/api/health`.
-The Blueprint deliberately does not create a database. When configuring the
-service in Render, provide `DATABASE_URL` as a secret using the existing
-PostgreSQL database's internal connection string. Deploying this Blueprint may
-create a new Render service; it does not automatically adopt or update the
-existing service. Avoid creating a duplicate service unless that is intended.
+The Blueprint deliberately does not create a database. Its `DATABASE_URL`
+environment variable is intentionally marked `sync: false`; configure it in
+the existing Render Web Service with `student-management-db`'s Internal
+Database URL. Do not create a duplicate service or database.
 
-1. Create a **paid Render PostgreSQL** database for the application. Do not use
-   Render's expiring free PostgreSQL tier for student records that must persist.
+1. Use the existing `student-management-db` PostgreSQL database; do not create
+   another database for this service. Check its plan and expiration date in the
+   Render dashboard. Student records that must persist need a non-expiring
+   database plan.
 2. If the current deployment has student data in SQLite, back up that database
    and import it to PostgreSQL **before changing the backend service's
    `DATABASE_URL`**. The import command below needs the source SQLite file and a
@@ -179,9 +191,9 @@ existing service. Avoid creating a duplicate service unless that is intended.
    backup of the Render PostgreSQL database in the Render dashboard. For an
    existing SQLite database, also create and verify a separate SQLite backup.
    Do not treat the workspace backup as a backup of Render data.
-4. In the backend Render Web Service, set `DATABASE_URL` to the PostgreSQL
-   database's **internal connection string**. The backend accepts Render's
-   `postgres://` or `postgresql://` URL format and uses PostgreSQL in
+4. In the existing backend Render Web Service, set `DATABASE_URL` to
+   `student-management-db`'s **Internal Database URL**. The backend accepts
+   Render's `postgres://` or `postgresql://` URL format and uses PostgreSQL in
    production. It exits with a clear configuration error if `DATABASE_URL` is
    missing or points to SQLite in production; SQLite remains the
    local-development default only. `APP_ENV=production` may also be set to
