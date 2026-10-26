@@ -6,7 +6,7 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://student-management-system-7zvb.onrender.com/api/:path*"
+      "destination": "https://student-management-api-62kg.onrender.com/api/:path*"
     }
   ]
 }

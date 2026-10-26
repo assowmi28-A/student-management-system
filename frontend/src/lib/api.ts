@@ -4,7 +4,7 @@ export const API_URL =
   process.env.NEXT_PUBLIC_API_URL ??
   (process.env.NODE_ENV === "development"
     ? "http://127.0.0.1:8000"
-    : "https://student-management-system-7zvb.onrender.com");
+    : "https://student-management-api-62kg.onrender.com");
 const API_BASE_URL = API_URL.replace(/\/+$/, "");
 const API_PATH_PREFIX = API_BASE_URL.endsWith("/api") ? "" : "/api";
 
